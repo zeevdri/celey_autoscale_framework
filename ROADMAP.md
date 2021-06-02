@@ -2,7 +2,7 @@ The finale system should be a cloud based autoscaling cluster to serve different
 
 # Development steps
 ## Local POC
-### 1. Local Running Environment
+### 1. Local Running Environment - DONE
 * celery
 * process based running workers
 * with tasks routing
