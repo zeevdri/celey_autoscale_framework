@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta16
+kind: Config
+metadata:
+  name: celey-autoscale-framework
+build:
+  local:
+    useBuildkit: true
+    push: false
+  artifacts:
+  - image: celery_worker
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: '**/*.py'
+          dest: .
+deploy:
+  kubectl:
+    manifests:
+    - infrastructure/rabbitmq/rabbitmq.yml
+    - infrastructure/redis/redis.yml
+    - infrastructure/workers/default-worker.yml
+    - infrastructure/workers/gpu-worker.yml
