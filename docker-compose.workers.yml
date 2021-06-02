@@ -1,18 +1,32 @@
-# TODO: implement
-#version: '3.3'
-#services:
-#    rabbitmq:
-#        container_name: rabbitmq
-#        image: rabbitmq:3.8.9-management
-#        ports:
-#        - 5673:5672
-#        - 15673:15672
-#        expose:
-#            - 5672
-#    redis:
-#        container_name: redis
-#        image: redis:6.0.10-alpine
-#        ports:
-#            - 6380:6379
-#        expose:
-#            - 6379
+version: '3.3'
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8.9
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - 5673:5672
+      - 15673:15672
+    expose:
+      - 5672
+  redis:
+    container_name: redis
+    image: redis:6.0.10-alpine
+    ports:
+      - 6380:6379
+    expose:
+      - 6379
+  default-worker:
+    container_name: default-worker
+    image: celery_worker
+    command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues', 'default', '-n', 'default-worker' ]
+    environment:
+      - CELERY_BROKER_URL=amqp://admin:mypass@rabbitmq:5673//
+      - CELERY_RESULTS_BACKEND=redis://redis:6380/0
+    volumes:
+      - ./:/app/
+    depends_on:
+      - rabbitmq
+      - redis
