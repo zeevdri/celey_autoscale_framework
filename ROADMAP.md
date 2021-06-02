@@ -6,7 +6,7 @@ The finale system should be a cloud based autoscaling cluster to serve different
 * celery
 * process based running workers
 * with tasks routing
-### 2. Local Docker Environment
+### 2. Local Docker Environment - Done
 workers run on dockers
 * write Dockerfile 
 ### 3. Local Kubernetes Environment
