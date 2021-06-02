@@ -3,14 +3,16 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8.9
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=mypass
     ports:
       - 5673:5672
       - 15673:15672
     expose:
       - 5672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
   redis:
     container_name: redis
     image: redis:6.0.10-alpine
@@ -23,8 +25,20 @@ services:
     image: celery_worker
     command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues', 'default', '-n', 'default-worker' ]
     environment:
-      - CELERY_BROKER_URL=amqp://admin:mypass@rabbitmq:5673//
-      - CELERY_RESULTS_BACKEND=redis://redis:6380/0
+      - CELERY_BROKER_URL=amqp://rabbitmq:5672//
+      - CELERY_RESULTS_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./:/app/
+    depends_on:
+      - rabbitmq
+      - redis
+  gpu-worker:
+    container_name: gpu-worker
+    image: celery_worker
+    command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues', 'gpu', '-n', 'gpu' ]
+    environment:
+      - CELERY_BROKER_URL=amqp://rabbitmq:5672//
+      - CELERY_RESULTS_BACKEND=redis://redis:6379/0
     volumes:
       - ./:/app/
     depends_on:
