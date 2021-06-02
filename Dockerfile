@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.2
-ARG PYTHON_VERSION=3.8
-FROM python:${PYTHON_VERSION}
+ARG PYTHON_VERSION=3.8.10
+FROM python:${PYTHON_VERSION}-slim-buster
 ENV PYTHONUNBUFFERED=1
 ENV WORKER_QUEUE=default
 ENV WORKER_NAME=default
