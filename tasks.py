@@ -3,7 +3,7 @@ from celery import Celery, shared_task, Task
 
 __logger = logging.getLogger(__name__)
 
-app = Celery()
+app = Celery("tasks")
 app.config_from_object('celeryconfig')
 
 
