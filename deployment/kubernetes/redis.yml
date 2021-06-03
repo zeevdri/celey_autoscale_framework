@@ -16,6 +16,27 @@ spec:
         - name: redis
           image: redis:6.0.10-alpine
           imagePullPolicy: Always
+          ports:
+            - name: client
+              containerPort: 6379
+            - name: gossip
+              containerPort: 16379
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: client # named port
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
       restartPolicy: Always
   selector:
     matchLabels:

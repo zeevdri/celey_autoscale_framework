@@ -21,6 +21,10 @@ spec:
             value: amqp://rabbitmq-service:5672//
           - name: CELERY_RESULTS_BACKEND
             value: redis://redis-service:6379/0
+          - name: WORKER_QUEUE
+            value: gpu
+          - name: WORKER_NAME
+            value: gpu-worker
       restartPolicy: Always
   selector:
     matchLabels:

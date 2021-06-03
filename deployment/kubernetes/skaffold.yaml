@@ -17,7 +17,7 @@ build:
 deploy:
   kubectl:
     manifests:
-    - infrastructure/rabbitmq/rabbitmq.yml
-    - infrastructure/redis/redis.yml
-    - infrastructure/workers/default-worker.yml
-    - infrastructure/workers/gpu-worker.yml
+    - deployment/kubernetes/rabbitmq.yml
+    - deployment/kubernetes/redis.yml
+    - deployment/kubernetes/default-worker.yml
+    - deployment/kubernetes/gpu-worker.yml
