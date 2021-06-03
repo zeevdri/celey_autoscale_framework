@@ -16,6 +16,20 @@ spec:
         - name: gpu-worker
           image: celery_worker
           imagePullPolicy: Never
+          readinessProbe:
+            exec:
+              command: [ 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_NAME)' ]
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            periodSeconds: 3
+          livenessProbe:
+            exec:
+              command: [ 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_NAME)' ]
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            periodSeconds: 3
+            failureThreshold: 5
+            successThreshold: 1
           env:
           - name: CELERY_BROKER_URL
             value: amqp://rabbitmq-service:5672//
