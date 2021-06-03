@@ -7,7 +7,7 @@ __all__ = ("app", "gpu_task", "cpu_task",)
 __logger = logging.getLogger(__name__)
 
 app = Celery("tasks")
-app.config_from_object('celery_autoscale_framework.celeryconfig')
+app.config_from_object('celeryconfig')
 
 
 @shared_task(name="gpu_task", queue="gpu", bind=True)

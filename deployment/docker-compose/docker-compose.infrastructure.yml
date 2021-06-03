@@ -2,7 +2,7 @@ version: '3.3'
 services:
     rabbitmq:
         container_name: rabbitmq
-        image: rabbitmq:3.8.9-management
+        image: rabbitmq:${RABBIT_MQ_VERSION}-alpine
         ports:
         - 5673:5672
         - 15673:15672
@@ -10,7 +10,7 @@ services:
             - 5672
     redis:
         container_name: redis
-        image: redis:6.0.10-alpine
+        image: redis:${REDIS_VERSION}-alpine
         ports:
             - 6380:6379
         expose:

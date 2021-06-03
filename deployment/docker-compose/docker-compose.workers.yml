@@ -1,4 +1,11 @@
-version: '3.3'
+version: '3.7'
+x-celery-worker:
+  &celery-worker
+  image: celery_worker
+  command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues','${WORKER_QUEUE}', '-n', '${WORKER_NAME}' ]
+  depends_on:
+    - rabbitmq
+    - redis
 services:
   rabbitmq:
     container_name: rabbitmq
@@ -9,7 +16,7 @@ services:
     expose:
       - 5672
     healthcheck:
-      test: rabbitmq-diagnostics -q ping
+      test: ["CMD", 'rabbitmq-diagnostics', '-q', 'ping', '&&', 'rabbitmq-diagnostics', '-q', 'status', '&&', 'nc', '-z', 'localhost', '5672']
       interval: 30s
       timeout: 30s
       retries: 3
@@ -21,26 +28,18 @@ services:
     expose:
       - 6379
   default-worker:
+    <<: *celery-worker
     container_name: default-worker
-    image: celery_worker
-    command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues', 'default', '-n', 'default-worker' ]
     environment:
       - CELERY_BROKER_URL=amqp://rabbitmq:5672//
       - CELERY_RESULTS_BACKEND=redis://redis:6379/0
-    volumes:
-      - ./:/app/
-    depends_on:
-      - rabbitmq
-      - redis
+      - WORKER_QUEUE=default
+      - WORKER_NAME=default
   gpu-worker:
+    <<: *celery-worker
     container_name: gpu-worker
-    image: celery_worker
-    command: [ 'celery', '-A', 'tasks', 'worker', '--loglevel', 'info', '--queues', 'gpu', '-n', 'gpu' ]
     environment:
       - CELERY_BROKER_URL=amqp://rabbitmq:5672//
       - CELERY_RESULTS_BACKEND=redis://redis:6379/0
-    volumes:
-      - ./:/app/
-    depends_on:
-      - rabbitmq
-      - redis
+      - WORKER_QUEUE=gpu
+      - WORKER_NAME=gpu
