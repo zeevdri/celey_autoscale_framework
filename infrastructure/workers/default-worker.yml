@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default-worker-deployment
+  labels:
+    app: default-worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: default-worker
+      labels:
+        app: default-worker
+    spec:
+      containers:
+        - name: default-worker
+          image: celery_worker
+          imagePullPolicy: Never
+          env:
+          - name: CELERY_BROKER_URL
+            value: amqp://rabbitmq-service:5672//
+          - name: CELERY_RESULTS_BACKEND
+            value: redis://redis-service:6379/0
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: default-worker
+
+

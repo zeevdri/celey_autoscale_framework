@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-worker-deployment
+  labels:
+    app: gpu-worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: gpu-worker
+      labels:
+        app: gpu-worker
+    spec:
+      containers:
+        - name: gpu-worker
+          image: celery_worker
+          imagePullPolicy: Never
+          env:
+          - name: CELERY_BROKER_URL
+            value: amqp://rabbitmq-service:5672//
+          - name: CELERY_RESULTS_BACKEND
+            value: redis://redis-service:6379/0
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: gpu-worker
+
