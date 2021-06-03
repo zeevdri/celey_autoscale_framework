@@ -366,11 +366,12 @@ pyvenv.cfg
 pip-selfcheck.json
 
 
+### custom
 *.md
-
-docker-compose.*.yml
 
 makefile
 
 requirements.dev.txt
 requirements.txt
+
+deployment/*
