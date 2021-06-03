@@ -7,7 +7,7 @@ ENV WORKER_NAME=default
 ENV CELERY_BROKER_URL=amqp://localhost:5672
 ENV CELERY_RESULTS_BACKEND=redis://localhost:6379
 WORKDIR /app
-COPY requirements.lock.txt /app/requirements.txt
+COPY requirements/requirements.lock.txt /app/requirements.txt
 RUN --mount=type=cache,target=/root/.cache \
     pip install -r requirements.txt
 COPY . /app/
