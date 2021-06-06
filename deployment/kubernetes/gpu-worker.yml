@@ -34,9 +34,9 @@ spec:
             successThreshold: 1
           env:
           - name: CELERY_BROKER_URL
-            value: amqp://rabbitmq-service:5672//
+            value: amqp://rabbitmq:5672//
           - name: CELERY_RESULTS_BACKEND
-            value: redis://redis-service:6379/0
+            value: redis://redis:6379/0
           - name: WORKER_QUEUE
             value: gpu
           - name: WORKER_PREFIX
