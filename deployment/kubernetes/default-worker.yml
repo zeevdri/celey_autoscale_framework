@@ -16,15 +16,17 @@ spec:
         - name: default-worker
           image: celery_worker
           imagePullPolicy: Never
+          command: ['sh', '-c']
+          args: ['celery -A tasks worker --loglevel INFO --queues $(WORKER_QUEUE) -n $(WORKER_PREFIX)-${HOSTNAME} -c 1']
           readinessProbe:
             exec:
-              command: ['celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_NAME)']
+              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_PREFIX)-${HOSTNAME}']
             initialDelaySeconds: 20
             timeoutSeconds: 5
             periodSeconds: 3
           livenessProbe:
             exec:
-              command: [ 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_NAME)' ]
+              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_PREFIX)-${HOSTNAME}']
             initialDelaySeconds: 20
             timeoutSeconds: 5
             periodSeconds: 3
@@ -37,7 +39,7 @@ spec:
             value: redis://redis-service:6379/0
           - name: WORKER_QUEUE
             value: default
-          - name: WORKER_NAME
+          - name: WORKER_PREFIX
             value: default-worker
       restartPolicy: Always
   selector:
