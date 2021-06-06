@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gpu-worker-deployment
+  name: gpu-worker
   labels:
     app: gpu-worker
 spec:

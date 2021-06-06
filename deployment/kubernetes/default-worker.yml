@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: default-worker-deployment
+  name: default-worker
   labels:
     app: default-worker
 spec:
