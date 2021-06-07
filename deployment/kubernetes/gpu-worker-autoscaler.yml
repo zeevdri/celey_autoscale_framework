@@ -1,0 +1,36 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: default-worker
+spec:
+  scaleTargetRef:
+    apiVersion:    apps/v1  # Optional. Default: apps/v1
+    kind:          Deployment         # Optional. Default: Deployment
+    name:          gpu-worker         # Mandatory. Must be in the same namespace as the ScaledObject
+#    envSourceContainerName: {container-name}         # Optional. Default: .spec.template.spec.containers[0]
+  pollingInterval: 30                                # Optional. Default: 30 seconds
+  cooldownPeriod:  60                               # Optional. Default: 300 seconds
+  minReplicaCount: 0                                 # Optional. Default: 0
+  maxReplicaCount: 5                                 # Optional. Default: 100
+  advanced:                                          # Optional. Section to specify advanced options
+#    restoreToOriginalReplicaCount: false       # Optional. Default: false
+#    horizontalPodAutoscalerConfig:                   # Optional. Section to specify HPA related options
+#      behavior:                                      # Optional. Use to modify HPA's scaling behavior
+#        scaleDown:
+#          stabilizationWindowSeconds: 300
+#          policies:
+#          - type: Percent
+#            value: 100
+#            periodSeconds: 15
+  triggers:
+    - type: rabbitmq
+      metadata:
+        host: amqp://rabbitmq.default.svc.cluster.local:5672// # Optional. If not specified, it must be done by using TriggerAuthentication.
+        protocol: auto # Optional. Specifies protocol to use, either amqp or http, or auto to autodetect based on the `host` value. Default value is auto.
+        mode: QueueLength # QueueLength or MessageRate
+        value: "1" # message backlog or publish/sec. target per instance
+        queueName: gpu
+        #          vhostName: / # Optional. If not specified, use the vhost in the `host` connection string.
+        # Alternatively, you can use existing environment variables to read configuration from:
+        # See details in "Parameter list" section
+#          hostFromEnv: RABBITMQ_HOST # Optional. You can use this instead of `host` parameter
