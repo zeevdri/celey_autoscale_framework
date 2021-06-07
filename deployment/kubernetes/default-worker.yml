@@ -21,13 +21,13 @@ spec:
           readinessProbe:
             exec:
               command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_PREFIX)-${HOSTNAME}']
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             timeoutSeconds: 5
             periodSeconds: 3
           livenessProbe:
             exec:
               command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@$(WORKER_PREFIX)-${HOSTNAME}']
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             timeoutSeconds: 5
             periodSeconds: 3
             failureThreshold: 5

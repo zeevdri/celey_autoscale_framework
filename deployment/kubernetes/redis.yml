@@ -32,7 +32,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: client # named port
-            initialDelaySeconds: 30
+            initialDelaySeconds: 20
             timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 5
