@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: rabbitmq:3.8.16-alpine
+          image: rabbitmq:3.8.16-management-alpine
           imagePullPolicy: Always
       restartPolicy: Always
   selector:
@@ -38,3 +38,4 @@ spec:
     - name: managment
       protocol: TCP
       port: 15672
+      nodePort: 32673

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: default-worker
 spec:
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       name: default-worker
