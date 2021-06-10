@@ -1,0 +1,10 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Values.brokerScalerAuthName }}
+  namespace: {{ .Values.namespace | default "celery-autoscale" }}
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: celery-broker-secret
+      key: admin-host

@@ -41,6 +41,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "celeryWorkerApp.deploymentFullName" . }}
+  namespace {{ .Values.namespace | default "celery-autoscale" }}
   labels:
     {{- include "celeryWorkerApp.labels" . | nindent 4 }}
 spec:
@@ -76,9 +77,9 @@ spec:
             successThreshold: 1
           env:
           - name: CELERY_BROKER_URL
-            value: amqp://rabbitmq:5672//
+            value: amqp://celery-broker:5672//
           - name: CELERY_RESULTS_BACKEND
-            value: redis://redis:6379/0
+            value: redis://celery-results:6379/0
           - name: WORKER_QUEUE
             value: {{ .Values.queueName }}
             {{- with .Values.affinity }}
@@ -98,6 +99,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ include "celeryWorkerApp.scalerFullName" . }}
+  namespace {{ .Values.namespace | default "celery-autoscale" }}
 spec:
   scaleTargetRef:
     apiVersion:    apps/v1
@@ -110,10 +112,12 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        host: amqp://rabbitmq.default.svc.cluster.local:5672//
+        protocol: http
         mode: QueueLength
         value: {{ .Values.scalerTasksPerWorker | default 1 | quote }}
         queueName: {{ .Values.queueName }}
+      authenticationRef:
+        name: {{ .Values.brokerScalerAuthName }}
 {{- end }}
 
 {{- define "celeryWorkerApp.app" -}}
