@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: celery-results
+  namespace: celery-autoscale
   labels:
-    app: redis
+    app: celery-results
 spec:
   replicas: 1
   template:
     metadata:
-      name: redis
+      name: celery-results
       labels:
-        app: redis
+        app: celery-results
     spec:
       containers:
-        - name: redis
+        - name: celery-results
           image: redis:6.0.10-alpine
           imagePullPolicy: Always
           ports:
@@ -40,17 +41,18 @@ spec:
       restartPolicy: Always
   selector:
     matchLabels:
-      app: redis
+      app: celery-results
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: celery-results
+  namespace: celery-autoscale
 spec:
   type: NodePort
   selector:
-    app: redis
+    app: celery-results
   ports:
     - protocol: TCP
       port: 6379

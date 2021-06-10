@@ -2,6 +2,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: gpu-worker-scaler
+  namespace: celery-autoscale
 spec:
   scaleTargetRef:
     apiVersion:    apps/v1  # Optional. Default: apps/v1
@@ -25,12 +26,12 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        host: amqp://rabbitmq.default.svc.cluster.local:5672//  # Optional. If not specified, it must be done by using TriggerAuthentication.
-#        host: http://guest:guest@rabbitmq.default.svc.cluster.local:15672//  # Optional. If not specified, it must be done by using TriggerAuthentication.
         protocol: auto # Optional. Specifies protocol to use, either amqp or http, or auto to autodetect based on the `host` value. Default value is auto.
         mode: QueueLength # QueueLength or MessageRate
         value: "1" # message backlog or publish/sec. target per instance
         queueName: gpu
+      authenticationRef:
+        name: broker-scaler-auth
         #          vhostName: / # Optional. If not specified, use the vhost in the `host` connection string.
         # Alternatively, you can use existing environment variables to read configuration from:
         # See details in "Parameter list" section

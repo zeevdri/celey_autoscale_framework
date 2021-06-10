@@ -17,7 +17,7 @@ build:
 deploy:
   kubectl:
     manifests:
-    - deployment/kubernetes/rabbitmq.yml
-    - deployment/kubernetes/redis.yml
+    - deployment/kubernetes/celery-broker.yml
+    - deployment/kubernetes/celery-results.yml
     - deployment/kubernetes/default-worker.yml
     - deployment/kubernetes/gpu-worker.yml
