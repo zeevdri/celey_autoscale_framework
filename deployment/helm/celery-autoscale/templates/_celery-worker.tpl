@@ -110,16 +110,16 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        host: http://guest:guest@rabbitmq.default.svc.cluster.local:15672//
+        host: amqp://rabbitmq.default.svc.cluster.local:5672//
         mode: QueueLength
-        value: {{ .Values.scalerTasksPerWorker | default 1 }}
+        value: {{ .Values.scalerTasksPerWorker | default 1 | quote }}
         queueName: {{ .Values.queueName }}
 {{- end }}
 
 {{- define "celeryWorkerApp.app" -}}
 ---
 
-{{ template "celeryWorkerApp.worker" . -}}
+{{ template "celeryWorkerApp.worker" . }}
 ...
 
 ---

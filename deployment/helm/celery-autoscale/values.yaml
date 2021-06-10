@@ -80,6 +80,9 @@ defaultWorker:
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
+  maxReplicaCount: 5
+  scalerTasksPerWorker: 1
+
 
 gpuWorker:
   appName: gpu
@@ -97,5 +100,6 @@ gpuWorker:
                 operator: Gt
                 values:
                   - "0"
+  maxReplicaCount: 5
 
 
