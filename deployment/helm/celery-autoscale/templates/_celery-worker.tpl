@@ -56,8 +56,8 @@ spec:
     spec:
       containers:
         - name: {{ include "celeryWorkerApp.workerName" . }}
-          image: celery-worker
-          imagePullPolicy: Never
+          image: "{{ .Values.workerImage.repository }}:{{ .Values.workerImage.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.workerImage.pullPolicy }}
           command: ['sh', '-c']
           args: ['celery -A tasks worker --loglevel INFO --queues $(WORKER_QUEUE) -n ${HOSTNAME} -c 1']
           readinessProbe:
