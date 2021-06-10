@@ -25,7 +25,7 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        host: amqp://rabbitmq.default.svc.cluster.local:5672// # Optional. If not specified, it must be done by using TriggerAuthentication.
+        host: http://guest:guest@rabbitmq.default.svc.cluster.local:15672// # Optional. If not specified, it must be done by using TriggerAuthentication.
         protocol: auto # Optional. Specifies protocol to use, either amqp or http, or auto to autodetect based on the `host` value. Default value is auto.
         mode: QueueLength # QueueLength or MessageRate
         value: "1" # message backlog or publish/sec. target per instance
