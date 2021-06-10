@@ -1,0 +1,1 @@
+{{ template "celeryWorkerApp.app" (merge (. | deepCopy) (dict "Values" .Values.gpuWorker)) }}
