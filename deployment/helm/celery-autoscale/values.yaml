@@ -6,7 +6,7 @@ namespace: celery-autoscale
 workerImage:
   repository: celery-worker
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "latest"
 
 #
 #imagePullSecrets: [ ]
