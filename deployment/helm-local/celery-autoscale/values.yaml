@@ -74,6 +74,7 @@ workerImage:
 #  #  targetCPUUtilizationPercentage: 80
 ## targetMemoryUtilizationPercentage: 80
 
+flowerAppName: flower
 
 defaultWorker:
   appName: default

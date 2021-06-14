@@ -1,0 +1,107 @@
+{{- define "celeryWorkerApp.flowerAppName" -}}
+{{ include "celery-autoscale.name" . }}-{{ .Values.flowerAppName }}
+{{- end }}
+
+{{- define "celeryWorkerApp.flowerName" -}}
+{{ include "celeryWorkerApp.flowerAppName" . }}
+{{- end }}
+
+{{- define "celeryWorkerApp.flowerFullname" -}}
+{{ include "celery-autoscale.fullname" . }}-{{ .Values.flowerAppName }}
+{{- end }}
+
+{{- define "celeryWorkerApp.flowerDeploymentFullName" -}}
+{{ include "celeryWorkerApp.flowerFullname" . -}}
+{{- end -}}
+
+{{- define "celeryWorkerApp.flowerServiceFullName" -}}
+{{ include "celeryWorkerApp.flowerFullname" . -}}
+{{- end -}}
+
+{{- define "celeryWorkerApp.flowerSelectorLabels" -}}
+app.kubernetes.io/name: {{ include "celeryWorkerApp.flowerName" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{- define "celeryWorkerApp.flowerLabels" -}}
+helm.sh/chart: {{ include "celery-autoscale.chart" . }}
+{{ include "celeryWorkerApp.flowerSelectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "celeryWorkerApp.flowerDeploymentFullName" . }}
+  namespace: {{ .Values.namespace | default "celery-autoscale" }}
+  labels:
+    {{- include "celeryWorkerApp.flowerLabels" . | nindent 4 }}
+spec:
+  replicas: {{ default .Values.replicaCount 1 }}
+  selector:
+    matchLabels:
+      {{- include "celeryWorkerApp.flowerSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      name: {{ include "celeryWorkerApp.flowerName" . }}
+      labels:
+        {{- include "celeryWorkerApp.flowerSelectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "celeryWorkerApp.flowerName" . }}
+          image: "{{ .Values.workerImage.repository }}:{{ .Values.workerImage.tag }}"
+          imagePullPolicy: {{ .Values.workerImage.pullPolicy }}
+          command: [ 'sh', '-c' ]
+          args: [ 'celery -A tasks flower --port=5555' ]
+          ports:
+            - containerPort: 5555
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 3
+            httpGet:
+              path: /api/tasks
+              port: 5555
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 3
+            httpGet:
+              path: /api/tasks
+              port: 5555
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://celery-broker:5672//
+            - name: CELERY_RESULTS_BACKEND
+              value: redis://celery-results:6379/0
+      {{- with .Values.flowerAffinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flowerTolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "celeryWorkerApp.flowerServiceFullName" . }}
+  namespace: {{ .Values.namespace | default "celery-autoscale" }}
+  labels:
+    {{- include "celeryWorkerApp.flowerLabels" . | nindent 4 }}
+spec:
+  type: NodePort
+  selector:
+    {{- include "celeryWorkerApp.flowerSelectorLabels" . | nindent 4 }}
+  ports:
+    - name: client
+      protocol: TCP
+      port: 5555
+      nodePort: 32674

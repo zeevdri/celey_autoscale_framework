@@ -22,16 +22,16 @@
 {{ include "celeryWorkerApp.fullname" . }}-scaler
 {{- end -}}
 
-{{- define "celeryWorkerApp.labels" -}}
+{{- define "celeryWorkerApp.workerLabels" -}}
 helm.sh/chart: {{ include "celery-autoscale.chart" . }}
-{{ include "celeryWorkerApp.selectorLabels" . }}
+{{ include "celeryWorkerApp.workerSelectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "celeryWorkerApp.selectorLabels" -}}
+{{- define "celeryWorkerApp.workerSelectorLabels" -}}
 app.kubernetes.io/name: {{ include "celeryWorkerApp.workerName" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -43,17 +43,17 @@ metadata:
   name: {{ include "celeryWorkerApp.deploymentFullName" . }}
   namespace: {{ .Values.namespace | default "celery-autoscale" }}
   labels:
-    {{- include "celeryWorkerApp.labels" . | nindent 4 }}
+    {{- include "celeryWorkerApp.workerLabels" . | nindent 4 }}
 spec:
   replicas: {{ default .Values.replicaCount 0 }}
   selector:
     matchLabels:
-      {{- include "celeryWorkerApp.selectorLabels" . | nindent 6 }}
+      {{- include "celeryWorkerApp.workerSelectorLabels" . | nindent 6 }}
   template:
     metadata:
       name: {{ include "celeryWorkerApp.workerName" . }}
       labels:
-        {{- include "celeryWorkerApp.selectorLabels" . | nindent 8 }}
+        {{- include "celeryWorkerApp.workerSelectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ include "celeryWorkerApp.workerName" . }}
