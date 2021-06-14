@@ -41,7 +41,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "celeryWorkerApp.deploymentFullName" . }}
-  namespace {{ .Values.namespace | default "celery-autoscale" }}
+  namespace: {{ .Values.namespace | default "celery-autoscale" }}
   labels:
     {{- include "celeryWorkerApp.labels" . | nindent 4 }}
 spec:
@@ -99,7 +99,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ include "celeryWorkerApp.scalerFullName" . }}
-  namespace {{ .Values.namespace | default "celery-autoscale" }}
+  namespace: {{ .Values.namespace | default "celery-autoscale" }}
 spec:
   scaleTargetRef:
     apiVersion:    apps/v1
