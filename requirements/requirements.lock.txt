@@ -5,10 +5,14 @@ click==7.1.2
 click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.2.0
+https://github.com/mher/flower/zipball/master#egg=flower
+humanize==3.7.1
 kombu==5.1.0
+prometheus-client==0.8.0
 prompt-toolkit==3.0.18
 pytz==2021.1
 redis==3.5.3
 six==1.16.0
+tornado==6.1
 vine==5.0.0
 wcwidth==0.2.5

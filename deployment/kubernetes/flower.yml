@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-flower
+  namespace: celery-autoscale
+  labels:
+    app: celery-flower
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: celery-flower
+      labels:
+        app: celery-flower
+    spec:
+      containers:
+        - name: celery-flower
+          image: celery-worker
+          imagePullPolicy: Never
+          command: [ 'sh', '-c' ]
+          args: [ 'celery -A tasks flower --port=5555' ]
+          ports:
+            - containerPort: 5555
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 3
+            httpGet:
+              path: /api/tasks
+              port: 5555
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 3
+            httpGet:
+              path: /api/tasks
+              port: 5555
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://celery-broker:5672//
+            - name: CELERY_RESULTS_BACKEND
+              value: redis://celery-results:6379/0
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: celery-flower
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-flower
+  namespace: celery-autoscale
+spec:
+  type: NodePort
+  selector:
+    app: celery-flower
+  ports:
+    - name: client
+      protocol: TCP
+      port: 5555
+      nodePort: 32674
