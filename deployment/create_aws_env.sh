@@ -67,5 +67,20 @@ RESULTS_ID=$(echo "$RESULTS_RESPONSE" | jq ".CacheCluster.CacheClusterId")
 aws --region "$AWS_REGION" elasticache delete-cache-cluster \
     --cache-cluster-id "$RESULTS_ID"
 
+
+# create cluster key pair
+EKS_KEY_NAME="autoscale_key"
+
+KEY_RESPONSE=$(aws --region "$AWS_REGION" ec2 create-key-pair \
+    --key-name "$EKS_KEY_NAME")
+
+
+KEY_PAIR_ID=$(echo "$KEY_RESPONSE" | tr '\r\n' ' '| jq -r ".KeyPairId")
+
+
+aws --region "$AWS_REGION" ec2 delete-key-pair \
+    --key-pair-id "$KEY_PAIR_ID"
+
 # init kubernetes cluster
 # TODO write init kubernetes cluster commands
+
