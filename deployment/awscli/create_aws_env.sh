@@ -74,13 +74,21 @@ EKS_KEY_NAME="autoscale_key"
 KEY_RESPONSE=$(aws --region "$AWS_REGION" ec2 create-key-pair \
     --key-name "$EKS_KEY_NAME")
 
+PRIVATE_KEY_FILE="$HOME/pems/autoscale_key.pem"
+PUBLIC_KEY_FILE="$HOME/pems/autoscale_key.pub"
 
 KEY_PAIR_ID=$(echo "$KEY_RESPONSE" | tr '\r\n' ' '| jq -r ".KeyPairId")
+PRIVATE_KEY=$(echo "$KEY_RESPONSE" | tr '\r\n' ' '| jq -r ".KeyMaterial" | sed "s/- /-\n/g" | sed "s/ -/\n-/g")
 
+echo "$PRIVATE_KEY" > "$PRIVATE_KEY_FILE"
+chmod 400 "$PRIVATE_KEY_FILE"
+PUBLIC_KEY=$(ssh-keygen -y -f "$PRIVATE_KEY_FILE")
+echo "$PUBLIC_KEY" > "$PUBLIC_KEY_FILE"
 
 aws --region "$AWS_REGION" ec2 delete-key-pair \
     --key-pair-id "$KEY_PAIR_ID"
 
 # init kubernetes cluster
-# TODO write init kubernetes cluster commands
+eksctl create cluster  -f "./deployment/awscli/cluster.yaml"
 
+eksctl delete cluster -f "./deployment/awscli/cluster.yaml"

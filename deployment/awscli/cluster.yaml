@@ -1,0 +1,35 @@
+# nonk8s
+# reference https://eksctl.io/usage/schema/
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-autoscale
+  region: eu-west-2
+  version: 1.20
+#vpc:
+#  id: 123
+managedNodeGroups:
+  - name: cpu-nodes
+    instanceType: t2.small
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    volumeSize: 100
+    ssh:
+      publicKeyPath: ~/pems/autoscale_key.pub
+  - name: gpu-nodes
+    instanceType: t2.small
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    maxPodsPerNode: 1
+    volumeSize: 100
+    taints:
+      - key: gpu
+        value: 1
+        effect: NO_SCHEDULE
+    labels:
+      gpu: 1
+    ssh:
+      publicKeyPath: ~/pems/autoscale_key.pub
