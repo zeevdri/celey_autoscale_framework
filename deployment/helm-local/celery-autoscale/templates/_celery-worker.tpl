@@ -63,16 +63,16 @@ spec:
           args: ['celery -A tasks worker --loglevel INFO --queues $(WORKER_QUEUE) -n ${HOSTNAME} -c 1']
           readinessProbe:
             exec:
-              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@${HOSTNAME}']
+              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-t', '9', '-d', 'celery@${HOSTNAME}']
             initialDelaySeconds: 10
-            timeoutSeconds: 5
-            periodSeconds: 3
+            timeoutSeconds: 10
+            periodSeconds: 5
           livenessProbe:
             exec:
-              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-d', 'celery@${HOSTNAME}']
+              command: ['sh', '-c', 'celery', '-A', 'tasks', 'inspect', 'ping', '-t', '9', '-d', 'celery@${HOSTNAME}']
             initialDelaySeconds: 10
-            timeoutSeconds: 5
-            periodSeconds: 3
+            timeoutSeconds: 10
+            periodSeconds: 5
             failureThreshold: 5
             successThreshold: 1
           env:

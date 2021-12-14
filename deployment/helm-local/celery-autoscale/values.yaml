@@ -82,7 +82,7 @@ defaultWorker:
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
-  maxReplicaCount: 5
+  maxReplicaCount: 2
   scalerTasksPerWorker: 1
 
 
@@ -102,7 +102,7 @@ gpuWorker:
                 operator: Gt
                 values:
                   - "0"
-  maxReplicaCount: 5
+  maxReplicaCount: 2
 
 brokerScalerAuthName: broker-scaler-auth
 

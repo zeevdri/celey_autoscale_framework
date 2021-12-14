@@ -8,7 +8,7 @@ helm repo update
 kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 
-CHART_PATH=./deployment/helm/celery-autoscale
+CHART_PATH=./deployment/helm-local/celery-autoscale
 
 helm dependency update $CHART_PATH
 

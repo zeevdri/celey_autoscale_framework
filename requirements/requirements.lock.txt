@@ -6,7 +6,6 @@ click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.2.0
 https://github.com/mher/flower/zipball/master#egg=flower
-humanize==3.7.1
 kombu==5.1.0
 prometheus-client==0.8.0
 prompt-toolkit==3.0.18
