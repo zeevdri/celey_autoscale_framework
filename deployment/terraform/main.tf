@@ -21,10 +21,10 @@ variable "aws-region" {
   default = "eu-central-1"
   nullable = false
   description = "the region where to deploy"
-  validation {
-    condition = can(regex("^(eu|us|af|ap|ca|sa|me)-(west|east|north|south|central|)-\d+$", var.aws-region))
-    error_message = "aws-region must be a valid aws region e.g. eu-central-1"
-  }
+  //  validation {
+  //    condition = can(regex("^(eu|us|af|ap|ca|sa|me)-(west|east|north|south|central)-\\d+$", var.aws-region))
+  //    error_message = "aws-region must be a valid aws region e.g. eu-central-1"
+  //  }
 }
 
 locals {
@@ -106,7 +106,6 @@ resource "aws_eks_cluster" "eks-cluster01" {
     "audit"]
 
   depends_on = [
-    aws_cloudwatch_log_group.eks-log-group,
     aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.AmazonEKSVPCResourceController,
   ]
@@ -122,7 +121,7 @@ resource "aws_cloudwatch_log_group" "eks-log-group" {
 }
 
 resource "aws_eks_node_group" "cpu-node-group" {
-  cluster_name = aws_eks_cluster.eks-cluster01
+  cluster_name = aws_eks_cluster.eks-cluster01.name
   node_group_name = "cpu-test01"
   node_role_arn = aws_iam_role.eks-role.arn
   subnet_ids = aws_subnet.private[*].id
@@ -149,7 +148,7 @@ resource "aws_eks_node_group" "cpu-node-group" {
 }
 
 resource "aws_eks_node_group" "gpu-node-group" {
-  cluster_name = aws_eks_cluster.eks-cluster01
+  cluster_name = aws_eks_cluster.eks-cluster01.name
   node_group_name = "gpu-test01"
   node_role_arn = aws_iam_role.eks-role.arn
   subnet_ids = aws_subnet.private[*].id
@@ -166,12 +165,10 @@ resource "aws_eks_node_group" "gpu-node-group" {
   instance_types = [
     "t3.micro"]
 
-  taint = [
-    {
-      key : "gpu",
-      effect : "NO_SCHEDULE"
-    }
-  ]
+  taint {
+    key = "gpu"
+    effect = "NO_SCHEDULE"
+  }
 
   labels = {
     gpu : 1
