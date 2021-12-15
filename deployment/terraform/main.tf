@@ -21,10 +21,10 @@ variable "aws-region" {
   default = "eu-central-1"
   nullable = false
   description = "the region where to deploy"
-  //  validation {
-  //    condition = can(regex("^(eu|us|af|ap|ca|sa|me)-(west|east|north|south|central)-\\d+$", var.aws-region))
-  //    error_message = "aws-region must be a valid aws region e.g. eu-central-1"
-  //  }
+  validation {
+    condition = can(regexall("(?:eu|us|af|ap|ca|sa|me)-(?:west|east|north|south|central)-\\d", var.aws-region))
+    error_message = "Aws-region must be a valid aws region e.g. eu-central-1."
+  }
 }
 
 locals {
